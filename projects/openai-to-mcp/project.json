@@ -1,0 +1,13 @@
+{
+  "id": "openai-to-mcp",
+  "name": "OpenAPI to MCP Server",
+  "repository": "https://github.com/tuvia-r/openai-to-mcp",
+  "revision": "eff861b427cfa886026364e438a315342aed713a",
+  "license": "MIT",
+  "language": "TypeScript",
+  "runtime": "Requires Node.js 18 or newer; tested with Node.js 24.12.0 and npm 11.6.2",
+  "setup_command": "npm install",
+  "baseline_test_command": "npm run build && npm test",
+  "start_command": "npm run build && npm start",
+  "log_file": "~/.openapi-mcp/logs/app-YYYY-MM-DD.log"
+}

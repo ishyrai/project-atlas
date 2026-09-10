@@ -1,0 +1,14 @@
+{
+  "id": "project-001-short-name",
+  "title": "Short evaluator-facing title",
+  "difficulty": "easy",
+  "category": "logic",
+  "status": "draft",
+  "bug_commit": "commit-or-content-hash",
+  "reproduction_command": "command that fails before the repair",
+  "verification_command": "command that passes after the repair",
+  "timeout_seconds": 300,
+  "allowed_network": false,
+  "expected_files_changed": [],
+  "tags": []
+}

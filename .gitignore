@@ -1,0 +1,18 @@
+# Generated evaluation runs and temporary exported workspaces
+results/*
+!results/.gitkeep
+exports/
+
+# Dependencies and build outputs inside copied projects
+**/node_modules/
+**/.venv/
+**/__pycache__/
+**/dist/
+**/build/
+**/coverage/
+**/logs/*.log
+
+# Local secrets
+**/.env
+**/.env.*
+!**/.env.example

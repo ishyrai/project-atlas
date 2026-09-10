@@ -1,0 +1,57 @@
+{
+  "name": "visionary",
+  "productName": "Visionary",
+  "version": "2.1.0",
+  "description": "Local desktop agent operating system for Jarvis and the Visionary mission control stack.",
+  "main": "electron.js",
+  "scripts": {
+    "ensure-native": "node scripts/ensure-native.js",
+    "prestart": "node scripts/ensure-native.js",
+    "start": "node server.js",
+    "predev": "node scripts/ensure-native.js",
+    "dev": "node --watch server.js",
+    "bridge": ".venv/bin/python3 bridge.py",
+    "watchdog": "python3 watchdog.py",
+    "app": "electron .",
+    "build": "electron-builder --mac",
+    "dist": "electron-builder --mac dmg",
+    "build:unsigned": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac --dir && npm run rebuild:node",
+    "dist:unsigned": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dmg && npm run rebuild:node",
+    "rebuild:node": "npm rebuild better-sqlite3",
+    "check": "node --check server.js && node --check db.js && node --check sse.js && node --check electron.js && node --check public/app.js && node --check src/workflow-skill-template.js && node --check src/domain-expert-source.js && node scripts/validate-org-chart.mjs",
+    "smoke": "node --test tests/smoke.mjs",
+    "test:unit": "node --test tests/*.test.mjs",
+    "test:stream": "node scripts/stream-smoke.mjs",
+    "workspace-map": "node scripts/workspace-map.mjs",
+    "verify": "npm run ensure-native && npm run check && npm run smoke && npm run test:stream && npm run test:unit"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.10.0"
+  },
+  "devDependencies": {
+    "electron": "^32.3.3",
+    "electron-builder": "^26.15.2"
+  },
+  "build": {
+    "appId": "com.zombieduckling.visionary",
+    "productName": "Visionary",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
+      "target": [
+        "dmg"
+      ]
+    },
+    "files": [
+      "electron.js",
+      "server.js",
+      "db.js",
+      "sse.js",
+      "src/**/*",
+      "public/**/*",
+      "personalities/**/*",
+      "package.json",
+      "node_modules/**/*"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "replace-with-project-id",
+  "name": "Upstream project name",
+  "repository": "https://example.com/owner/repository",
+  "revision": "full-commit-sha",
+  "license": "SPDX-license-identifier",
+  "language": "primary-language",
+  "runtime": "runtime-and-version",
+  "setup_command": "command run from a case workspace",
+  "baseline_test_command": "command proving the untouched revision passes"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "visionary",
+  "name": "Visionary",
+  "repository": "https://github.com/ZombieDuckling/visionary",
+  "revision": "fba31f489c7146df66e2443d189501565c9ad48f",
+  "license": "MIT",
+  "language": "JavaScript",
+  "runtime": "Tested with Node.js 24.12.0 and npm 11.6.2",
+  "setup_command": "npm install",
+  "baseline_test_command": "npm run verify",
+  "start_command": "npm start",
+  "log_file": "~/.visionary/server.log"
+}

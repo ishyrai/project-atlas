@@ -1,0 +1,13 @@
+{
+  "id": "image-service",
+  "name": "Image Service",
+  "repository": "https://github.com/kshyatisekhar-panda/image-service",
+  "revision": "c5249af54c076482297766b8de207dcb29ec8540",
+  "license": "MIT",
+  "language": "TypeScript",
+  "runtime": "Tested with Node.js 24.12.0 and npm 11.6.2",
+  "setup_command": "cd upstream && npm install",
+  "baseline_test_command": "cd upstream && npm run build",
+  "start_command": "./run.sh <command> [options]",
+  "log_file": "logs/run.log"
+}
