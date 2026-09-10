@@ -151,12 +151,8 @@ export class ImageProcessor {
       const watermarkHeight = Math.round(
         (watermarkWidth / watermarkMeta.width) * watermarkMeta.height
       );
-      const opacityByte = Math.round(scale * 255);
+      const opacityByte = Math.round(opacity * 255);
       logger.info(`Watermark render: dimensions=${watermarkWidth}x${watermarkHeight}, alpha=${opacityByte}/255`);
-      const expectedOpacityByte = Math.round(opacity * 255);
-      if (opacityByte !== expectedOpacityByte) {
-        logger.error(`Opacity verification failed: expected=${expectedOpacityByte}/255, rendered=${opacityByte}/255`);
-      }
 
       const watermarkBuffer = await sharp(options.watermark)
         .resize(watermarkWidth, watermarkHeight, { fit: 'inside' })
