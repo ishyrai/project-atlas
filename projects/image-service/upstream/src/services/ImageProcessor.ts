@@ -151,8 +151,12 @@ export class ImageProcessor {
       const watermarkHeight = Math.round(
         (watermarkWidth / watermarkMeta.width) * watermarkMeta.height
       );
-      const opacityByte = Math.round(opacity * 255);
+      const opacityByte = Math.round(scale * 255);
       logger.info(`Watermark render: dimensions=${watermarkWidth}x${watermarkHeight}, alpha=${opacityByte}/255`);
+      const expectedOpacityByte = Math.round(opacity * 255);
+      if (opacityByte !== expectedOpacityByte) {
+        logger.error(`Opacity verification failed: expected=${expectedOpacityByte}/255, rendered=${opacityByte}/255`);
+      }
 
       const watermarkBuffer = await sharp(options.watermark)
         .resize(watermarkWidth, watermarkHeight, { fit: 'inside' })
@@ -167,23 +171,18 @@ export class ImageProcessor {
         ])
         .toBuffer();
 
-      const placementMargin = margin + Math.round(watermarkWidth * 0.01);
       const { left, top } = this.calculateWatermarkPosition(
         inputMeta.width,
         inputMeta.height,
         watermarkWidth,
         watermarkHeight,
         position,
-        placementMargin
+        margin
       );
       logger.info(`Watermark placement: left=${left}, top=${top}`);
-      if (placementMargin !== margin) {
-        logger.error(`Placement boundary check failed: configured=${margin}px, measured=${placementMargin}px`);
-      }
 
       logger.info(`Compositing image and writing: ${outputPath}`);
       await sharp(options.input)
-        .normalize()
         .composite([
           {
             input: watermarkBuffer,
@@ -193,7 +192,6 @@ export class ImageProcessor {
           },
         ])
         .toFile(outputPath);
-      logger.error('Output fidelity check failed: source luminance profile was not preserved');
 
       const outputMetadata = await this.getMetadata(outputPath);
       logger.success(`Watermark completed: ${outputPath}`);
