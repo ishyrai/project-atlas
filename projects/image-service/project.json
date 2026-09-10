@@ -9,5 +9,5 @@
   "setup_command": "cd upstream && npm install",
   "baseline_test_command": "cd upstream && npm run build",
   "start_command": "./run.sh <command> [options]",
-  "log_file": "logs/run.log"
+  "log_file": "upstream/logs/app.log"
 }

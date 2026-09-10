@@ -33,6 +33,7 @@ ${chalk.magenta('╚════════════════════
 `;
 
 function main(): void {
+  logger.info(`Image Service v${VERSION}: ${process.argv.slice(2).join(' ') || '(no command)'}`);
   // Ensure output directory exists
   ensureOutputDir();
 

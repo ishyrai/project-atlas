@@ -58,6 +58,6 @@ Edit every placeholder before using the case.
 | --- | --- | --- |
 | `visionary` | `cd projects/visionary/upstream && npm run verify` | `~/.visionary/server.log` |
 | `openai-to-mcp` | `cd projects/openai-to-mcp/upstream && npm run build && npm test` | `~/.openapi-mcp/logs/app-YYYY-MM-DD.log` |
-| `image-service` | `cd projects/image-service/upstream && npm run build` | `projects/image-service/logs/run.log` |
+| `image-service` | `cd projects/image-service/upstream && npm run build` | `projects/image-service/upstream/logs/app.log` |
 
 Dependencies are installed locally but excluded from Git.

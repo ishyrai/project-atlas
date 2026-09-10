@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { AspectRatio, WatermarkPosition } from '../types';
+import { logger } from './logger';
 
 const OUTPUT_DIR = path.resolve(process.cwd(), 'output');
 
@@ -21,21 +22,28 @@ export function generateOutputPath(
     if (outputDir !== '.' && !fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
-    return path.resolve(customOutput);
+    const resolvedOutput = path.resolve(customOutput);
+    logger.info(`Output selected: ${customOutput}`);
+    return resolvedOutput;
   }
 
   ensureOutputDir();
   const ext = newExtension || path.extname(inputPath);
   const basename = path.basename(inputPath, path.extname(inputPath));
   const timestamp = Date.now();
-  return path.join(OUTPUT_DIR, `${basename}_${suffix}_${timestamp}${ext}`);
+  const outputPath = path.join(OUTPUT_DIR, `${basename}_${suffix}_${timestamp}${ext}`);
+  logger.info(`Generated output: ${path.relative(process.cwd(), outputPath)}`);
+  return outputPath;
 }
 
 export function validateFilePath(filePath: string): void {
   const resolvedPath = path.resolve(filePath);
   if (!fs.existsSync(resolvedPath)) {
-    throw new Error(`File not found: ${resolvedPath}`);
+    logger.error(`File validation failed: ${filePath}`);
+    throw new Error(`File not found: ${filePath}`);
   }
+  const stats = fs.statSync(resolvedPath);
+  logger.debug(`File validated: ${filePath} (${formatBytes(stats.size)})`);
 }
 
 export function isValidImageFormat(filePath: string): boolean {
