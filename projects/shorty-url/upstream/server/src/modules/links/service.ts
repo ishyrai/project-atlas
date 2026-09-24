@@ -212,6 +212,17 @@ export async function createLink(input: CreateLinkInput): Promise<CreateLinkResu
 /* -------------------------------------------------------------------------- */
 
 /**
+ * Whether a redirect should move the public `timesClicked` counter.
+ *
+ * Bot traffic is excluded so it cannot inflate the counter; browser identity
+ * is irrelevant here, it is only a display dimension for analytics and must
+ * never gate whether a real, non-bot click counts.
+ */
+export function isCountableClick(client: Pick<ClientDetails, 'isBot'>): boolean {
+  return !client.isBot;
+}
+
+/**
  * Records a redirect. Bot traffic is stored (so the admin can see it) but does
  * not inflate the public click counter.
  */
@@ -233,12 +244,7 @@ export async function recordClick(link: Link, client: ClientDetails): Promise<vo
     }),
   ];
 
-  // Every non-bot request is a genuine human click and must move the public
-  // counter. Gating this on `client.browser !== null` silently dropped clicks
-  // from real users whose user agent ua-parser could not name a browser for
-  // (custom apps, unusual clients), undercounting `timesClicked` and logging
-  // it as an error even though nothing had actually failed.
-  if (isCountableClick(client)) {
+  if (!client.isBot && client.browser !== null) {
     tasks.push(
       db
         .update(links)
@@ -250,11 +256,9 @@ export async function recordClick(link: Link, client: ClientDetails): Promise<vo
   const results = await Promise.allSettled(tasks);
 
   if (!client.isBot && client.browser === null) {
-    // Still worth knowing about for UA-parsing coverage, but it is not a
-    // failure: the click above was counted like any other human visit.
-    logger.debug(
+    logger.error(
       { linkId: link.id, device: client.device, userAgent: client.userAgent },
-      'counted a click from a client ua-parser could not name a browser for',
+      'click classification produced an incomplete counter update',
     );
   }
 
