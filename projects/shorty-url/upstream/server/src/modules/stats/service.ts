@@ -106,7 +106,13 @@ export async function getLinkAnalytics(urlId: number, days = 30): Promise<LinkAn
     .select({
       totalVisits: sql<number>`SUM(CASE WHEN ${visits.isBot} = 0 THEN 1 ELSE 0 END)`.mapWith(Number),
       botVisits: sql<number>`SUM(CASE WHEN ${visits.isBot} = 1 THEN 1 ELSE 0 END)`.mapWith(Number),
-      uniqueVisitors: countDistinct(visits.visitorAgent),
+      // `visitorAgent` must be counted from human rows only. Counting it across
+      // every row (bots included) let a handful of bot visits with distinct
+      // user agents inflate `uniqueVisitors` past what `totalVisits` (human
+      // only) could account for, an internally inconsistent result the code
+      // below then flagged as an error on every request that had any bot
+      // traffic at all.
+      uniqueVisitors: countDistinct(sql`CASE WHEN ${visits.isBot} = 0 THEN ${visits.visitorAgent} END`),
       visitsToday: sql<number>`SUM(CASE WHEN ${visits.isBot} = 0 AND ${visits.visitedAt} >= ${todayStart} THEN 1 ELSE 0 END)`.mapWith(
         Number,
       ),
