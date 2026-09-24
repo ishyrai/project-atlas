@@ -67,7 +67,13 @@ export function evaluateAvailability(link: Link | undefined | null): LinkAvailab
   if (link.deletedAt) return 'deleted';
   if (link.blacklisted === 1) return 'blocked';
   if (link.expiredStatus === 1) return 'expired';
-  if (link.expiresAt && link.expiresAt.getTime() >= Date.now()) return 'expired';
+  // A link is expired once its expiry timestamp is in the past, not while it
+  // is still upcoming. The previous `>=` here treated every link with a
+  // *future* `expiresAt` as already expired (and, once the real expiry
+  // passed, flipped it back to 'active'), which is why the redirect handler
+  // kept logging `expiresAt` values in the future alongside `availability:
+  // 'expired'`.
+  if (link.expiresAt && link.expiresAt.getTime() <= Date.now()) return 'expired';
   return 'active';
 }
 
@@ -244,7 +250,12 @@ export async function recordClick(link: Link, client: ClientDetails): Promise<vo
     }),
   ];
 
-  if (!client.isBot && client.browser !== null) {
+  // Every non-bot request is a genuine human click and must move the public
+  // counter. Gating this on `client.browser !== null` silently dropped clicks
+  // from real users whose user agent ua-parser could not name a browser for
+  // (custom apps, unusual clients), undercounting `timesClicked` and logging
+  // it as an error even though nothing had actually failed.
+  if (isCountableClick(client)) {
     tasks.push(
       db
         .update(links)
@@ -256,9 +267,11 @@ export async function recordClick(link: Link, client: ClientDetails): Promise<vo
   const results = await Promise.allSettled(tasks);
 
   if (!client.isBot && client.browser === null) {
-    logger.error(
+    // Still worth knowing about for UA-parsing coverage, but it is not a
+    // failure: the click above was counted like any other human visit.
+    logger.debug(
       { linkId: link.id, device: client.device, userAgent: client.userAgent },
-      'click classification produced an incomplete counter update',
+      'counted a click from a client ua-parser could not name a browser for',
     );
   }
 
