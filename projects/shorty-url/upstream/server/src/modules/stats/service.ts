@@ -1,7 +1,6 @@
 import { and, count, countDistinct, desc, eq, gte, isNull, sql, sum } from 'drizzle-orm';
 import { db } from '../../db/index.js';
 import { analyticsEvents, contacts, links, reports, visits } from '../../db/schema.js';
-import { logger } from '../../lib/logger.js';
 
 /**
  * All aggregate reads live here so the SQL is in one place and the controllers
@@ -106,11 +105,7 @@ export async function getLinkAnalytics(urlId: number, days = 30): Promise<LinkAn
     .select({
       totalVisits: sql<number>`SUM(CASE WHEN ${visits.isBot} = 0 THEN 1 ELSE 0 END)`.mapWith(Number),
       botVisits: sql<number>`SUM(CASE WHEN ${visits.isBot} = 1 THEN 1 ELSE 0 END)`.mapWith(Number),
-      // `visitorAgent` must be counted from human rows only. Counting it
-      // across every row (bots included) let bot visits with distinct user
-      // agents inflate `uniqueVisitors` past what `totalVisits` (human only)
-      // could account for.
-      uniqueVisitors: countDistinct(sql`CASE WHEN ${visits.isBot} = 0 THEN ${visits.visitorAgent} END`),
+      uniqueVisitors: countDistinct(visits.visitorAgent),
       visitsToday: sql<number>`SUM(CASE WHEN ${visits.isBot} = 0 AND ${visits.visitedAt} >= ${todayStart} THEN 1 ELSE 0 END)`.mapWith(
         Number,
       ),
