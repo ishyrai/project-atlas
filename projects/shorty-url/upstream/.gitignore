@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Environment — never commit real credentials
+.env
+.env.local
+.env.*.local
+.env.production
+.env.test
+
+# Build output
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Fonts downloaded by scripts/generate-og.mjs, regenerated on demand
+frontend/.cache/
+
+# Drizzle-generated migrations (the checked-in SQL under server/sql is the source of truth)
+server/drizzle/
+
+# Testing
+coverage/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
+
+# Database dumps — these contain personal data (visitor IPs, reporter emails)
+*.sql.gz
+*_dump.sql
+shorty-db*.sql

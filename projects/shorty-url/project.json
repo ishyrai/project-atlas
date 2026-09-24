@@ -1,0 +1,13 @@
+{
+  "id": "shorty-url",
+  "name": "Shorty URL",
+  "repository": "https://github.com/shehari007/url-shorty",
+  "revision": "7cf77c1f425ba40f6271ff82534736cc3fa665e8",
+  "license": "MIT",
+  "language": "TypeScript",
+  "runtime": "Node.js 22.x, npm, and MySQL 8 or TiDB",
+  "setup_command": "cd upstream/server && npm install && cp .env.example .env",
+  "baseline_test_command": "cd upstream/server && npm test && npm run typecheck",
+  "start_command": "cd upstream/server && npm run dev",
+  "log_file": "upstream/server/logs/app.log"
+}

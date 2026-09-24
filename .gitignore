@@ -1,9 +1,5 @@
-# Generated evaluation runs and temporary exported workspaces
-results/*
-!results/.gitkeep
-exports/
-
-# Dependencies and build outputs inside copied projects
+# Dependencies and build outputs
+.DS_Store
 **/node_modules/
 **/.venv/
 **/__pycache__/
