@@ -5,6 +5,7 @@ import { analyticsEvents, blockedDomains, links, visits, type Link } from '../..
 import { generateShortCode, isReservedCode, sha256 } from '../../lib/crypto.js';
 import { AppError } from '../../lib/errors.js';
 import { logger } from '../../lib/logger.js';
+import { reportError } from '../../lib/error-reporting.js';
 import type { ClientDetails } from '../../lib/request.js';
 import { buildShortUrl, extractHostname, inspectDestinationUrl } from '../../lib/url-safety.js';
 
@@ -245,10 +246,9 @@ export async function recordClick(link: Link, client: ClientDetails): Promise<vo
   const results = await Promise.allSettled(tasks);
 
   if (!client.isBot && client.browser === null) {
-    logger.error(
-      { linkId: link.id, device: client.device, userAgent: client.userAgent },
-      'click classification produced an incomplete counter update',
-    );
+    const details = { linkId: link.id, device: client.device, userAgent: client.userAgent };
+    logger.error(details, 'click classification produced an incomplete counter update');
+    reportError(new Error('click classification produced an incomplete counter update'), details);
   }
 
   for (const result of results) {

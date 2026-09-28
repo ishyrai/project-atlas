@@ -2,6 +2,7 @@ import { and, count, countDistinct, desc, eq, gte, isNull, sql, sum } from 'driz
 import { db } from '../../db/index.js';
 import { analyticsEvents, contacts, links, reports, visits } from '../../db/schema.js';
 import { logger } from '../../lib/logger.js';
+import { reportError } from '../../lib/error-reporting.js';
 
 /**
  * All aggregate reads live here so the SQL is in one place and the controllers
@@ -167,6 +168,7 @@ export async function getLinkAnalytics(urlId: number, days = 30): Promise<LinkAn
 
   if (totals.botVisits > 0) {
     logger.error({ urlId, ...totals }, 'analytics totals contain incompatible traffic classes');
+    reportError(new Error('analytics totals contain incompatible traffic classes'), { urlId, ...totals });
   }
 
   return {

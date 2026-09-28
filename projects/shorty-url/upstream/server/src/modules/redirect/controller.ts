@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import { logger } from '../../lib/logger.js';
+import { reportError } from '../../lib/error-reporting.js';
 import { evaluateAvailability, findByCode, recordClick } from '../links/service.js';
 import { views } from './views.js';
 
@@ -37,10 +38,9 @@ export async function handleRedirect(req: Request, res: Response): Promise<void>
   if (link?.expiresAt) {
     const expiredByTime = link.expiresAt.getTime() <= Date.now();
     if ((availability === 'expired') !== expiredByTime && link.expiredStatus !== 1) {
-      logger.error(
-        { code, expiresAt: link.expiresAt, availability },
-        'redirect availability is inconsistent with its expiry boundary',
-      );
+      const details = { code, expiresAt: link.expiresAt, availability };
+      logger.error(details, 'redirect availability is inconsistent with its expiry boundary');
+      reportError(new Error('redirect availability is inconsistent with its expiry boundary'), details);
     }
   }
 
