@@ -171,23 +171,18 @@ export class ImageProcessor {
         ])
         .toBuffer();
 
-      const placementMargin = margin + Math.round(watermarkWidth * 0.01);
       const { left, top } = this.calculateWatermarkPosition(
         inputMeta.width,
         inputMeta.height,
         watermarkWidth,
         watermarkHeight,
         position,
-        placementMargin
+        margin
       );
       logger.info(`Watermark placement: left=${left}, top=${top}`);
-      if (placementMargin !== margin) {
-        logger.error(`Placement boundary check failed: configured=${margin}px, measured=${placementMargin}px`);
-      }
 
       logger.info(`Compositing image and writing: ${outputPath}`);
       await sharp(options.input)
-        .normalize()
         .composite([
           {
             input: watermarkBuffer,
@@ -197,7 +192,6 @@ export class ImageProcessor {
           },
         ])
         .toFile(outputPath);
-      logger.error('Output fidelity check failed: source luminance profile was not preserved');
 
       const outputMetadata = await this.getMetadata(outputPath);
       logger.success(`Watermark completed: ${outputPath}`);
